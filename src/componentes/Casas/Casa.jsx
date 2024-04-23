@@ -6,10 +6,12 @@ import Nav from '../Home/Nav';
 import Pages from '../Home/Pages';
 import i18n from 'i18next';
 import axios from 'axios';
+import { ProgressSpinner } from 'primereact/progressspinner';
 import '../Personajes/personajes.css';
 
 export default function Casa() {
     const [casa, setCasa] = useState([]);
+    const [cargadoCs, setCargadocs] = useState(false);
 
     let { id } = useParams();
     const { t } = useTranslation();
@@ -20,12 +22,19 @@ export default function Casa() {
     },[]);
 
     const getHouses = async() => {
-        const res = await axios('https://db-go-t.vercel.app/houses');
-        const miCasa = res.data.filter((x) => {
-            return x.id == id;
-        });
-        console.log(miCasa);
-        setCasa(miCasa); 
+        try {
+            setCargadocs(true); // Inicia la carga
+            const res = await axios('https://db-go-t.vercel.app/houses');
+            const miCasa = res.data.filter((x) => {
+                return x.id == id;
+            });
+            console.log(miCasa);
+            setCasa(miCasa); 
+          } catch (error) {
+            console.error('Error al obtener las casas:', error);
+          } finally {
+            setCargadocs(false); // Finaliza la carga, independientemente de si fue exitosa o no
+          } 
     }
 
     const cambiarIdioma = (idiom) => {
@@ -35,13 +44,18 @@ export default function Casa() {
     return (
         <div className='container-casas'>
             <Nav func={cambiarIdioma} casa={true} buscador={false} atras={true}/>
+            {cargadoCs && (
+            <div className='container-spinner'>
+              <ProgressSpinner style={{width: '50px', height: '50px'}} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+            </div>
+        )}
             {
                 casa.map((casa, i) => {
                     console.log(casa);
                     return (
                         <div key={i}>
-                            <img className="foto-escu" key={i} src={casa.image}/>
-                            <p className='text-carac'> {t('house') +' - '+casa.name} </p>
+                            <img className="foto-escu animate__animated animate__fadeIn" key={i} src={casa.image}/>
+                            <p className='text-carac animate__animated animate__fadeIn'> {t('house') +' - '+casa.name} </p>
                         </div>
                     )
                 })                
@@ -50,7 +64,7 @@ export default function Casa() {
                 casa.map((casa, i) => {
                     console.log(casa);
                     return (
-                        <div className='caracteristicas' key={i}>
+                        <div className='caracteristicas animate__animated animate__fadeIn' key={i}>
                              <div className='caracteristica'>
                                 <p className='text-carac'> {t('foundation')}</p>
                                 {

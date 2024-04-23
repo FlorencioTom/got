@@ -5,10 +5,13 @@ import i18n from 'i18next';
 import axios from 'axios';
 import SimpleBar from 'simplebar-react';
 import { NavLink } from 'react-router-dom';
+import { ProgressSpinner } from 'primereact/progressspinner';
 import './casas.css';
+import 'animate.css';
 
 export default function Casas(){
   const [casas, setCasas] = useState([]);
+  const [cargadoC, setCargadoc] = useState(false);
 
   const cambiarIdioma = (idiom) => {
     i18n.changeLanguage(idiom);
@@ -19,9 +22,16 @@ export default function Casas(){
   },[])
 
   const getHouses = async() => {
-    const res = await axios('https://db-go-t.vercel.app/houses');
-    console.log(res.data);
-    setCasas(res.data);    
+    try {
+      setCargadoc(true); // Inicia la carga
+      const res = await axios('https://db-go-t.vercel.app/houses');
+      console.log(res.data);
+      setCasas(res.data);
+    } catch (error) {
+      console.error('Error al obtener las casas:', error);
+    } finally {
+      setCargadoc(false); // Finaliza la carga, independientemente de si fue exitosa o no
+    }   
   }
 
   const buscando = async(input) => {
@@ -40,11 +50,16 @@ export default function Casas(){
       <Nav func={cambiarIdioma} casa={true} buscador={true} busca={buscando}/>
         <div className='casas'>
         <SimpleBar style={{ height: '75vh', color:'white', width:'100%' }} className='custom-scrollbar'>
-        <div className="inner-content" style={{ display: 'flex', gap:'10px', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+        {cargadoC && (
+            <div className='container-spinner'>
+              <ProgressSpinner style={{width: '50px', height: '50px'}} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+            </div>
+          )}
+        <div className="inner-content" style={{ display: 'grid', gap: '10px', flexWrap: 'wrap', justifyContent: 'flex-start', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
         {casas.map((casa, index) => (
               <NavLink to={"/casa/"+casa.id} key={index}>
                 {/*backgroundImage: `url(${personaje.image})`,*/}
-              <div className='casa-escudo'  style={
+              <div className='casa-escudo animate__animated animate__fadeIn'  style={
                 {
                 position:'relative',
                 display: 'flex',

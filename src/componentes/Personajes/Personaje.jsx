@@ -6,52 +6,60 @@ import Nav from '../Home/Nav';
 import Pages from '../Home/Pages';
 import i18n from 'i18next';
 import axios from 'axios';
+import { ProgressSpinner } from 'primereact/progressspinner';
 import './personajes.css';
 
 const Personaje = () => {
     const [personaje, setPersonaje] = useState([]);
+    const [cargando, setCargando] = useState(false);
 
-    let { id } = useParams();
-    const { t } = useTranslation();
+    let {id} = useParams();
+    const {t} = useTranslation();
 
     useEffect( () => {
       getCharacter();
-      //getHouses();
-    },[])
+    },[]);
     
 
     const getCharacter = async() => {
-        const res = await axios('https://db-go-t.vercel.app/characters');
-        const mipersonaje = res.data.map(objeto => {
-            // Copiamos el objeto para evitar mutar el objeto original
-            const objetoTransformado = {...objeto};
-            
-            // Iteramos sobre cada propiedad del objeto
-            Object.keys(objetoTransformado).forEach(propiedad => {
-              // Si la propiedad tiene valor null, la cambiamos por una cadena vacía
-              if (objetoTransformado[propiedad] === null) {
-                objetoTransformado[propiedad] = '';
-              }
-            });
-            
-            return objetoTransformado;
-          });
-        const mipersonaje2 = mipersonaje.filter((x) => {
-            return x.id == id;
-        })
-
-        const res2 = await axios('https://db-go-t.vercel.app/houses');
-        const micasa = res2.data.filter((x) => {
-            return x.name == mipersonaje2[0].house;
-        })
-        console.log(mipersonaje2);
-        if (micasa.length > 0 && micasa[0].image) {
-            mipersonaje2[0].casaImage = micasa[0].image;
-          } else {
-            mipersonaje2[0].casaImage = 'imagen predeterminada'; 
-          }
-
-        setPersonaje(mipersonaje2);
+        try{
+            setCargando(true);
+            const res = await axios('https://db-go-t.vercel.app/characters');
+            const mipersonaje = res.data.map(objeto => {
+                // Copiamos el objeto para evitar mutar el objeto original
+                const objetoTransformado = {...objeto};
+                
+                // Iteramos sobre cada propiedad del objeto
+                Object.keys(objetoTransformado).forEach(propiedad => {
+                  // Si la propiedad tiene valor null, la cambiamos por una cadena vacía
+                  if (objetoTransformado[propiedad] === null) {
+                    objetoTransformado[propiedad] = '';
+                  }
+                });
+                
+                return objetoTransformado;
+              });
+            const mipersonaje2 = mipersonaje.filter((x) => {
+                return x.id == id;
+            })
+    
+            const res2 = await axios('https://db-go-t.vercel.app/houses');
+            const micasa = res2.data.filter((x) => {
+                return x.name == mipersonaje2[0].house;
+            })
+            console.log(mipersonaje2);
+            if(micasa.length > 0 && micasa[0].image) {
+                mipersonaje2[0].casaImage = micasa[0].image;
+            }else{
+                mipersonaje2[0].casaImage = 'imagen predeterminada'; 
+            }
+    
+            setPersonaje(mipersonaje2);
+        } catch (error) {
+            console.error('Error al obtener los personajes:', error);
+        } finally {
+            setCargando(false); // Finaliza la carga, independientemente de si fue exitosa o no
+        }
     }
 
 
@@ -63,15 +71,20 @@ const Personaje = () => {
   return (
     <div className='container-personajes'>
         <Nav func={cambiarIdioma} casa={true} buscador={false} atras={true}/>
+        {cargando && (
+            <div className='container-spinner'>
+              <ProgressSpinner style={{width: '50px', height: '50px'}} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
+            </div>
+        )}
         {
             personaje.map( (pers, index) => {
                 return(
-                    <div className='container-personaje' key={index}>
+                    <div className='container-personaje ' key={index}>
                         <div>
-                            <div className='foto-pers' style={{backgroundImage: `url(${pers.image})`}}></div>
-                            <p className='nombre-pers'>{pers.name}</p>
+                            <div className='foto-pers animate__animated animate__fadeIn' style={{backgroundImage: `url(${pers.image})`}}></div>
+                            <p className='nombre-pers animate__animated animate__fadeIn'>{pers.name}</p>
                         </div>
-                        <div className='caracteristicas'>
+                        <div className='caracteristicas animate__animated animate__fadeIn'>
                             <div className='caracteristica'>
                                 <p className='text-carac'> {t('house')}</p>
                                 {pers.casaImage &&

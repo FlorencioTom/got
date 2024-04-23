@@ -13,7 +13,12 @@
     align-items:center;
     justify-content:space-between;
   }
-
+  .atras{
+    font-size:30px;
+  }
+  .atrasT{
+    font-size:20px;
+  }
   .img-trono{
     width: 100%;
   }
@@ -21,11 +26,18 @@
   .lupa{
     margin-right: 10px;
   }
+  .css-1eed5fa-MuiInputBase-root-MuiInput-root::after{
+    border-bottom: 2px solid #ffffff !important;  
+  }
 
   .buscador{
     background-color: black;
+    outline: none; /* Elimina el outline predeterminado */
     color:white;
     border: none;
+    margin-top: 45px;
+    width:100px;
+    border-bottom: 1px solid white;
   }
 
   .overlay{
@@ -40,18 +52,15 @@
   }
   
   .nav{
-    width: 100%;
+    width: 90%;
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 25px; 
+    justify-content: space-between;
   }
   
   .container-nav{
     width:100%;
     display: flex;
     justify-content: space-between;
-    padding-left: 80px;
-    padding-right: 80px;
   }
 
   .container-nav-buscador{
@@ -65,7 +74,6 @@
   .flag{
     cursor: pointer;
     margin-top: 19px;
-    margin-right: 28px;
     vertical-align: bottom;
     height: 54px;
   }
@@ -84,7 +92,8 @@
 
   .container-flags{
     display: flex;
-    align-items: flex-end;
+    gap: 20px;
+    align-items: center;
   }
   .container-input{
     display: flex;
@@ -93,10 +102,8 @@
     border-bottom:1px solid rgb(255, 255, 255);
   }
   .casa{
-    width:52px;
-    height:49.4px;
-    margin-top: 15px;
-    margin-right: 28px;
+    margin-top: 18px;
+    font-size: 33px;
     cursor:pointer;
   }
   
@@ -147,12 +154,13 @@
     }
     .item-pages{
       margin: 20px;
-    }
-    .nav{
-      justify-content: center; 
+      margin-right: 0px;
     }
     .container-nav{
       padding-right: 0px;
+    }
+    .nav{
+      margin-bottom: 25px;
     }
   }
   
